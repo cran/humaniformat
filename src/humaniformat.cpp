@@ -14,8 +14,7 @@
 //' 
 //' @return a data.frame with the columns \code{salutation}, \code{first_name},
 //' \code{middle_name}, \code{last_name}, \code{suffix} and \code{full_name} (which contains the original name). In the
-//' event that a name doesn't \emph{have} a salutation, middle name, suffix, or so on, an empty string will be in that
-//' field instead.
+//' event that a name doesn't \emph{have} a salutation, middle name, suffix, or so on, an NA will appear.
 //' 
 //' @examples
 //' # Parse a simple name
@@ -26,7 +25,7 @@
 //' 
 //' @export
 // [[Rcpp::export]]
-DataFrame parse_names(std::vector < std::string > names){
+DataFrame parse_names(CharacterVector names){
   human_parse parse_inst;
   return parse_inst.parse_vector(names);
 }
@@ -53,7 +52,7 @@ DataFrame parse_names(std::vector < std::string > names){
 //' 
 //' @export
 // [[Rcpp::export]]
-std::vector < std::string > format_reverse(std::vector < std::string > names){
+CharacterVector format_reverse(CharacterVector names){
   human_format format_inst;
   return format_inst.reverse_format_vector(names);
 }
@@ -78,20 +77,19 @@ std::vector < std::string > format_reverse(std::vector < std::string > names){
 //' 
 //' @export
 // [[Rcpp::export]]
-std::vector < std::string > format_period(std::vector < std::string > names){
+CharacterVector format_period(CharacterVector names){
   human_format format_inst;
   return format_inst.period_format_vector(names);
 }
 
 // [[Rcpp::export]]
-std::vector < std::string > get_(std::vector < std::string > names, int element){
+CharacterVector get_(CharacterVector names, int element){
   human_getset getset_inst;
   return getset_inst.get_vector(names, element);
 }
 
 // [[Rcpp::export]]
-std::vector < std::string > set_(std::vector < std::string > names, int element,
-                                 std::string replacement){
+CharacterVector set_(CharacterVector names, int element, String replacement){
   human_getset getset_inst;
   return getset_inst.set_vector(names, element, replacement);
 }

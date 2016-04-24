@@ -1,19 +1,24 @@
 #include "human_getset.h"
 
-std::string human_getset::get_single(std::string name, int element){
-  std::vector < std::string > split_name = parse_single(name);
+String human_getset::get_single(std::string name, int element){
+  CharacterVector split_name = parse_single(name);
+  if(split_name[element] == ""){
+    return NA_STRING;
+  }
   return split_name[element];
 }
 
 std::string human_getset::set_single(std::string name, int element, std::string replacement){
-  std::vector < std::string > split_name = parse_single(name);
+  CharacterVector split_name = parse_single(name);
   split_name[element] = replacement;
   std::string output;
   
   for(unsigned int i = 0; i < split_name.size(); i++){
-    output.append(split_name[i]);
-    if(i < (split_name.size() - 1) && split_name[i] != ""){
-      output.append(" ");
+    if(split_name[i] != NA_STRING){
+      output.append(split_name[i]);
+      if(i < (split_name.size() - 1) && split_name[i] != ""){
+        output.append(" ");
+      }
     }
   }
   
@@ -25,21 +30,35 @@ std::string human_getset::set_single(std::string name, int element, std::string 
   return output;
 }
 
-std::vector < std::string > human_getset::get_vector(std::vector < std::string > names, int element){
+CharacterVector human_getset::get_vector(CharacterVector names, int element){
   
+  CharacterVector output(names.size());
   for(unsigned int i = 0; i < names.size(); i++){
-    names[i] = get_single(names[i], element);
+    if(names[i] == NA_STRING){
+      output[i] = NA_STRING;
+    } else {
+      output[i] = get_single(Rcpp::as<std::string>(names[i]), element);
+    }
   }
   
-  return names;
+  return output;
 }
 
-std::vector < std::string > human_getset::set_vector(std::vector < std::string > names, int element,
-                                                     std::string replacement){
+CharacterVector human_getset::set_vector(CharacterVector names, int element, String replacement){
   
-  for(unsigned int i = 0; i < names.size(); i++){
-    names[i] = set_single(names[i], element, replacement);
+  CharacterVector output(names.size());
+  
+  if(replacement == NA_STRING){
+    return names;
   }
   
-  return names;
+  for(unsigned int i = 0; i < names.size(); i++){
+    if(names[i] == NA_STRING){
+      output[i] = NA_STRING;
+    } else {
+      output[i] = set_single(Rcpp::as<std::string>(names[i]), element, replacement);
+    }
+  }
+  
+  return output;
 }
